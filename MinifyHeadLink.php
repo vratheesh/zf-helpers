@@ -6,7 +6,7 @@
  * with the added twist of minifying the css files.
  *
  * * ** PREREQUISITES **
- * This file expects that you have installed in ../ZendFramworkProject/Public/min 
+ * This file expects that you have installed minify in ../ZendFramworkProject/Public/min 
  * and that it is working. If your location has changed, modify 
  * $this->$_minifyLocation to your current location.
  * 
@@ -18,13 +18,13 @@
  * In your Layout or View scripts, you can simply call minifyHeadLink
  * in the same way that you used to call headLink. Here is an example:
  * 
-  $this->minifyHeadLink('/favicon.ico')	                 // Whatever was already loaded.
+  echo $this->minifyHeadLink('/favicon.ico')	           // Whatever was already loaded.
   ->prependStylesheet('http://example.com/js/sample.css')// 6th
   ->prependStylesheet('/js/jqModal.css')                 // 5th
-	->prependStylesheet('/js/jquery.alerts.css')           // 4th
-  ->prependStylesheet('/templates/main.css')						 // 3rd
-	->prependStylesheet('/css/project.css.php')		         // 2nd
-	->prependStylesheet('/css/jquery.autocomplete.css')    // 1st
+  ->prependStylesheet('/js/jquery.alerts.css')           // 4th
+  ->prependStylesheet('/templates/main.css')             // 3rd
+  ->prependStylesheet('/css/project.css.php')            // 2nd
+  ->prependStylesheet('/css/jquery.autocomplete.css')    // 1st
   ->appendStylesheet('/css/ie6.css','screen','lt IE 7'); // APPEND to make it Last
  *
  * 
@@ -43,12 +43,12 @@
 
  *
  *
- * @see 			 http://code.google.com/p/minify/
+ * @see        http://code.google.com/p/minify/
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2010-2011 Signature Tech Studios (http://www.stechstudio.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @author 		 Rob "Bubba" Hines
+ * @author     Rob "Bubba" Hines
  *
  */
 class Zend_View_Helper_MinifyHeadLink extends Zend_View_Helper_HeadLink {
