@@ -18,7 +18,7 @@
  * In your Layout or View scripts, you can simply call minifyHeadLink
  * in the same way that you used to call headLink. Here is an example:
  * 
-  echo $this->minifyHeadLink('/favicon.ico')	           // Whatever was already loaded.
+  echo $this->minifyHeadLink('/favicon.ico')             // Whatever was already loaded from Controller.
   ->prependStylesheet('http://example.com/js/sample.css')// 6th
   ->prependStylesheet('/js/jqModal.css')                 // 5th
   ->prependStylesheet('/js/jquery.alerts.css')           // 4th
@@ -36,7 +36,8 @@
  * 
    <link href="/min/?f=/css/jquery.autocomplete.css" media="screen" rel="stylesheet" type="text/css" />
    <link href="/css/project.css.php" media="screen" rel="stylesheet" type="text/css" />
-   <link href="/min/?f=/templates/main.css,/js/jquery.alerts.css,/js/jqModal.css" media="screen" rel="stylesheet" type="text/css" />
+   <link href="/min/?f=/templates/main.css,/js/jquery.alerts.css,/js/jqModal.css" media="screen" 
+               rel="stylesheet" type="text/css" />
    <link href="http://example.com/js/sample.css" media="screen" rel="stylesheet" type="text/css" />
    <link href="/favicon.ico" rel="shortcut icon" />
    <!--[if lt IE 7]> <link href="/css/ie6.css" media="screen" rel="stylesheet" type="text/css" /><![endif]-->
