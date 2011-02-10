@@ -18,7 +18,8 @@
  * In your Layout or View scripts, you can simply call minifyHeadScript
  * in the same way that you used to call headScript. Here is an example:
  * 
-  echo $this->minifyHeadScript()	   
+  echo $this->minifyHeadScript()
+  ->prependFile('http://ajax.googleapis.com/ajax/libs/someObject/2.2/object.js') // 12th	   
 	->prependFile('/js/jquery.delaytrigger.js')	// 11th
 	->prependFile('/js/sorttable.js')				    // 10th
 	->prependFile('/js/jquery.alerts.js')			  // 9th
@@ -41,6 +42,34 @@
 			try { init(); } catch(e) {}
 		});                                       // Last
 	');
+ * Because minify can't do anything with a javascript from some other server, nor
+ * does it do anything with inline scripts, and order is important, it will minify
+ * up to the point that it meets something that can't be minified, and then output
+ * the minified version, then the item(s) that couldn't be minified, and then attempt
+ * to minify items again, repeating the process till it is completed. Here is an
+ * example of output from the example above.
+ * 
+<script type="text/javascript" src="/min/?f=/js/main.js,/js/jquery-1.3.2.min.js,/js/jquery.color.js,
+									  /js/jquery.autocomplete.js,/js/jquery.tablesorter.min.js,/js/jquery.checkbox.js,
+									  /js/jquery.maskedinput.js,/js/jqModal.js,/js/jquery.alerts.js,/js/sorttable.js,
+									  /js/jquery.delaytrigger.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/someObject/2.2/object.js"></script>
+<script type="text/javascript">
+    //<![CDATA[
+
+		$(document).ready(function() {
+			$('#ajaxWait').ajaxStart(function() {
+		      $(this).show();
+		    }).ajaxStop(function() {
+		      $(this).hide();
+			      });
+			
+			try { init(); } catch(e) {}
+		});
+	    //]]>
+
+</script>
+
  * 
  * 
  *
@@ -68,7 +97,7 @@ class Zend_View_Helper_MinifyHeadScript extends Zend_View_Helper_HeadScript {
 	 * Registry key for placeholder
 	 * @var string
 	 */
-	protected $_regKey = 'Zend_View_Helper_MinifyHeadScript';
+	protected $_regKey = 'RC_View_Helper_MinifyHeadScript';
 	
 	/**
 	 * Return headScript object
@@ -114,9 +143,10 @@ class Zend_View_Helper_MinifyHeadScript extends Zend_View_Helper_HeadScript {
 		// Any indentation we should use.
 		$indent = (null !== $indent) ? $this->getWhitespace($indent) : $this->getIndent();
 		
-		// Will use this for minifying the javascript files.
-		$minItem = new stdClass();
-		$minItem->type = 'text/javascript';
+		//remove the slash at the beginning if there is one  
+		if (substr($baseUrl, 0, 1) == '/') {
+			$baseUrl = substr($baseUrl, 1);
+		}
 		
 		// Determining the appropriate way to handle inline scripts
 		if ($this->view) {
@@ -128,50 +158,43 @@ class Zend_View_Helper_MinifyHeadScript extends Zend_View_Helper_HeadScript {
 		$escapeStart = ($useCdata) ? '//<![CDATA[' : '//<!--';
 		$escapeEnd = ($useCdata) ? '//]]>' : '//-->';
 		
-		// we need to find all the files for inclusion and add to our scripts array
-		foreach ( $this as $item ) {
-			if (!$this->_isValid($item)) {
-				continue;
-			}
-			if (isset($item->attributes ['src']) && !empty($item->attributes ['src'])) {
-				$scripts [] = str_replace($baseUrl, '', $item->attributes ['src']);
-			}
-		}
-		
-		//remove the slash at the beginning if there is one  
-		if (substr($baseUrl, 0, 1) == '/') {
-			$baseUrl = substr($baseUrl, 1);
-		}
-		
-		// We will create our minify URL here. 
-		if (is_null($baseUrl) || $baseUrl == '') {
-			$minItem->attributes ['src'] = $this->getMinUrl() . '?f=' . implode(',', $scripts);
-		} else {
-			$minItem->attributes ['src'] = $this->getMinUrl() . '?b=' . $baseUrl . '&f=' . implode(',', $scripts);
-		}
-		
-		// we got our minified item, add it to the Item Array.
-		$items [] = $this->itemToString($minItem, '', '', '');
-		
-		// now get the rest of the inlines scripts, if any
 		$this->getContainer()->ksort();
 		foreach ( $this as $item ) {
-			if (!$this->_isValid($item)) {
-				continue;
+			
+			if (isset($item->attributes ['src']) && !empty($item->attributes ['src']) && strpos($item->attributes ['src'], 'http://') === false) {
+				$scripts [] = str_replace($baseUrl, '', $item->attributes ['src']);
+			} else {
+				if (count($scripts) > 0) {
+					$minScript = new stdClass();
+					$minScript->type = 'text/javascript';
+					// We will create our minify URL here. 
+					if (is_null($baseUrl) || $baseUrl == '') {
+						$minScript->attributes ['src'] = $this->getMinUrl() . '?f=' . implode(',', $scripts);
+					} else {
+						$minScript->attributes ['src'] = $this->getMinUrl() . '?b=' . $baseUrl . '&f=' . implode(',', $scripts);
+					}
+					$scripts = array(); // Empty our scripts array
+					$items [] = $this->itemToString($minScript, '', '', ''); // add the minified item
+				}
+				$items [] = $this->itemToString($item, $indent, $escapeStart, $escapeEnd); // add this item
 			}
-			// skip it if it is a file, we already did those.
-			if (isset($item->attributes ['src']) && !empty($item->attributes ['src'])) {
-				continue;
-			}
-			// add it to the items array
-			$items [] = $this->itemToString($item, $indent, $escapeStart, $escapeEnd);
 		}
 		
-		// turn it into one big string
-		$return = implode($this->getSeparator(), $items);
+		// Make sure we pick up the final minified item if it exists.
+		if (count($scripts) > 0) {
+			$minScript = new stdClass();
+			$minScript->type = 'text/javascript';
+			// We will create our minify URL here. 
+			if (is_null($baseUrl) || $baseUrl == '') {
+				$minScript->attributes ['src'] = $this->getMinUrl() . '?f=' . implode(',', $scripts);
+			} else {
+				$minScript->attributes ['src'] = $this->getMinUrl() . '?b=' . $baseUrl . '&f=' . implode(',', $scripts);
+			}
+			$scripts = array(); // Empty our scripts array
+			$items [] = $this->itemToString($minScript, '', '', '');
+		}
 		
-		// send it back
-		return $return;
+		return $indent . implode($this->_escape($this->getSeparator()) . $indent, $items);
 	}
 	
 	/**
