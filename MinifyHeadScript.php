@@ -6,7 +6,7 @@
  * with the added twist of minifying the javascript files. 
  * 
  * ** PREREQUISITES **
- * This file expects that you have installed in ../ZendFramworkProject/Public/min 
+ * This file expects that you have installed minify in ../ZendFramworkProject/Public/min 
  * and that it is working. If your location has changed, modify 
  * $this->$_minifyLocation to your current location.
  * 
@@ -20,17 +20,17 @@
  * 
   echo $this->minifyHeadScript()
   ->prependFile('http://ajax.googleapis.com/ajax/libs/someObject/2.2/object.js') // 12th	   
-	->prependFile('/js/jquery.delaytrigger.js')	// 11th
-	->prependFile('/js/sorttable.js')				    // 10th
-	->prependFile('/js/jquery.alerts.js')			  // 9th
-	->prependFile('/js/jqModal.js')					    // 8th
-	->prependFile('/js/jquery.maskedinput.js')	// 7th
-	->prependFile('/js/jquery.checkbox.js')			// 6th
-	->prependFile('/js/jquery.tablesorter.min.js')	// 5th
-	->prependFile('/js/jquery.autocomplete.js')	// 4th
-	->prependFile('/js/jquery.color.js')			  // 3rd
-	->prependFile('/js/jquery-1.3.2.min.js') 		// 2nd
-	->prependFile('/js/main.js') 					      // 1st
+	->prependFile('/js/jquery.delaytrigger.js') // 11th
+	->prependFile('/js/sorttable.js')           // 10th
+	->prependFile('/js/jquery.alerts.js')       // 9th
+	->prependFile('/js/jqModal.js')             // 8th
+	->prependFile('/js/jquery.maskedinput.js')  // 7th
+	->prependFile('/js/jquery.checkbox.js')     // 6th
+	->prependFile('/js/jquery.tablesorter.min.js') // 5th
+	->prependFile('/js/jquery.autocomplete.js') // 4th
+	->prependFile('/js/jquery.color.js')        // 3rd
+	->prependFile('/js/jquery-1.3.2.min.js')    // 2nd
+	->prependFile('/js/main.js')                // 1st
 	->appendScript('
 		$(document).ready(function() {
 			$(\'#ajaxWait\').ajaxStart(function() {
@@ -50,9 +50,9 @@
  * example of output from the example above.
  * 
 <script type="text/javascript" src="/min/?f=/js/main.js,/js/jquery-1.3.2.min.js,/js/jquery.color.js,
-									  /js/jquery.autocomplete.js,/js/jquery.tablesorter.min.js,/js/jquery.checkbox.js,
-									  /js/jquery.maskedinput.js,/js/jqModal.js,/js/jquery.alerts.js,/js/sorttable.js,
-									  /js/jquery.delaytrigger.js"></script>
+                    /js/jquery.autocomplete.js,/js/jquery.tablesorter.min.js,/js/jquery.checkbox.js,
+                    /js/jquery.maskedinput.js,/js/jqModal.js,/js/jquery.alerts.js,/js/sorttable.js,
+                    /js/jquery.delaytrigger.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/someObject/2.2/object.js"></script>
 <script type="text/javascript">
     //<![CDATA[
@@ -73,12 +73,12 @@
  * 
  * 
  *
- * @see 			 http://code.google.com/p/minify/
+ * @see        http://code.google.com/p/minify/
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2010-2011 Signature Tech Studios (http://www.stechstudio.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @author 		 Rob "Bubba" Hines
+ * @author     Rob "Bubba" Hines
  *
  */
 class Zend_View_Helper_MinifyHeadScript extends Zend_View_Helper_HeadScript {
